@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>KANIFNATH CONSTRUCTIONS - Billing</title>
+<style>
+@page{size:A4;margin:18mm}
+body{font-family:Segoe UI,Arial;background:#f2f2f2;margin:0;padding:15px}
+.container{width:210mm;min-height:297mm;margin:auto;background:#fff;padding:25px;box-shadow:0 4px 18px rgba(0,0,0,0.06);position:relative}
+
+:root{--brand-red:#a30000;}
+
+.watermark{position:absolute;top:32%;left:22%;width:430px;opacity:0.04;pointer-events:none}
+
+.header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #bbb;padding-bottom:8px;margin-bottom:10px}
+.logo img{width:80px}
+.company-center{text-align:center}
+.company-name{font-size:24px;font-weight:800;color:var(--brand-red);letter-spacing:1px}
+.tagline{font-size:12px;font-weight:600;color:#444}
+.company-info{text-align:right;font-size:11px;line-height:1.5;color:#333}
+
+.invoice-top{display:flex;justify-content:space-between;margin-top:10px;margin-bottom:10px}
+.box{border:1.5px solid var(--brand-red);padding:8px;font-size:12px;width:48%;border-radius:4px}
+.box input{width:95%;border:none;border-bottom:1px solid #999;font-size:12px;outline:none}
+
+
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{border:1px solid #dcdcdc;padding:6px;text-align:center;font-size:12px}
+th{background:var(--brand-red);color:#fff;font-weight:600}
+
+input,textarea{width:95%;padding:3px;border:1px solid #ccc;border-radius:3px;font-size:11px}
+
+.btn{padding:5px 10px;margin-top:6px;border:none;background:var(--brand-red);color:#fff;border-radius:3px;cursor:pointer;font-size:11px}
+.btn:hover{background:#700000}
+
+.summary{text-align:right;margin-top:15px;font-size:12px}
+.summary h2{color:var(--brand-red);margin-top:5px}
+
+.signature{display:flex;justify-content:space-between;margin-top:30px;font-size:11px}
+
+.footer{text-align:center;margin-top:40px;border-top:1px solid #ccc;padding-top:6px;font-size:10px;color:#444;line-height:1.4}
+
+@media print{.btn{display:none} body{background:#fff}}
+</style>
+</head>
+<body>
+
+<div class="container" id="invoice">
+
+<img src="LOGOKF.jpg" class="watermark">
+
+<div class="header">
+<div class="logo"><img src="LOGOKF.jpg"></div>
+<div class="company-center">
+<div class="company-name">KANIFNATH CONSTRUCTIONS</div>
+<div class="tagline">LABOUR SUPPLIER & DEVELOPER'S</div>
+</div>
+<div class="company-info">
+Kalewadi, Tal. Daund, Dist. Pune - 413801<br>
+Mob: 9763739384 / 9325503934<br>
+Email: kanifnathr.c111@gmail.com<br>
+GST: 27DHBPC7233L1ZB | PAN: DHBPC7233L
+</div>
+</div>
+
+<div class="invoice-top">
+<div class="box">
+<b>Invoice No:</b> <span id="invNo"></span><br>
+<b>Date:</b> <span id="invDate"></span>
+</div>
+<div class="box">
+<b>Client Name:</b> <input type="text"><br><br>
+<b>Site Location:</b> <input type="text">
+</div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Sr</th>
+<th>Length (m)</th>
+<th>Width (m)</th>
+<th>Height (m)</th>
+<th>Volume</th>
+<th>Description</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody id="billTable">
+<tr>
+<td>1</td>
+<td><input type="number" step="0.01" class="len" oninput="updateVolume(this)"></td>
+<td><input type="number" step="0.01" class="wid" oninput="updateVolume(this)"></td>
+<td><input type="number" step="0.01" class="hei" oninput="updateVolume(this)"></td>
+<td class="volume">0</td>
+<td><input type="text" value="ZN + PVC Coated Gabion Box"></td>
+<td><input type="number" class="qty" value="1"></td>
+<td><input type="number" class="rate" value="0"></td>
+<td class="amount">0.00</td>
+</tr>
+</tbody>
+</table>
+
+<button class="btn" onclick="addRow()">Add Item</button>
+<button class="btn" onclick="calculateTotal()">Calculate</button>
+<button class="btn" onclick="window.print()">Save PDF</button>
+
+<div class="summary">
+<p><b>Subtotal:</b> ₹ <span id="subtotal">0.00</span></p>
+<p><b>GST (%):</b> <input type="number" id="gstPercent" value="18" style="width:60px;text-align:right;"> % &nbsp; ₹ <span id="gst">0.00</span></p>
+<p><b>Mobilization Advance:</b> ₹ <input type="number" id="advance" value="0" style="width:120px;text-align:right;"></p>
+<p><b>Total Contract Value:</b> ₹ <span id="grossTotal">0.00</span></p>
+<h2>Balance Payable: ₹ <span id="finalTotal">0.00</span></h2>
+<p><b>Amount in Words:</b> <span id="amountWords"></span></p>
+</div>
+
+<h4>Terms & Conditions</h4>
+<textarea>
+1. GST Extra as applicable.
+2. Advance as mutually agreed.
+3. Balance after completion.
+4. Water & Electricity by client.
+</textarea>
+
+<div class="signature">
+<div>Client Signature<br><br>______________</div>
+<div>Authorized Signature<br><br>______________</div>
+</div>
+
+<div class="footer">
+Bank Details: __________________ | A/C No: __________ | IFSC: _________
+</div>
+
+</div>
+
+<script>
+document.getElementById('invNo').innerText="KC-"+Math.floor(Math.random()*10000);
+document.getElementById('invDate').innerText=new Date().toLocaleDateString();
+
+function updateVolume(input){
+let row=input.parentElement.parentElement;
+let l=parseFloat(row.querySelector('.len').value)||0;
+let w=parseFloat(row.querySelector('.wid').value)||0;
+let h=parseFloat(row.querySelector('.hei').value)||0;
+let volume=l*w*h;
+row.querySelector('.volume').innerText=volume.toFixed(3);
+}
+
+function addRow(){
+let table=document.getElementById("billTable");
+let rowCount=table.rows.length+1;
+let row=table.insertRow();
+row.innerHTML=`
+<td>${rowCount}</td>
+<td><input type="number" step="0.01" class="len" oninput="updateVolume(this)"></td>
+<td><input type="number" step="0.01" class="wid" oninput="updateVolume(this)"></td>
+<td><input type="number" step="0.01" class="hei" oninput="updateVolume(this)"></td>
+<td class="volume">0</td>
+<td><input type="text"></td>
+<td><input type="number" class="qty" value="1"></td>
+<td><input type="number" class="rate" value="0"></td>
+<td class="amount">0.00</td>`;
+}
+
+function calculateTotal(){
+let rows=document.querySelectorAll('#billTable tr');
+let subtotal=0;
+rows.forEach(row=>{
+let volume=parseFloat(row.querySelector('.volume').innerText)||0;
+let qty=row.querySelector('.qty').value||0;
+let rate=row.querySelector('.rate').value||0;
+let amount=volume*qty*rate;
+row.querySelector('.amount').innerText=amount.toFixed(2);
+subtotal+=amount;
+});
+
+let gstPercent=parseFloat(document.getElementById('gstPercent').value)||0;
+let gst=subtotal*(gstPercent/100);
+let grossTotal=subtotal+gst;
+document.getElementById('grossTotal').innerText=grossTotal.toFixed(2);
+let advance=parseFloat(document.getElementById('advance').value)||0;
+let final=grossTotal-advance;
+
+if(final<0){final=0}
+
+document.getElementById('subtotal').innerText=subtotal.toFixed(2);
+document.getElementById('gst').innerText=gst.toFixed(2);
+document.getElementById('finalTotal').innerText=final.toFixed(2);
+document.getElementById('amountWords').innerText=numberToWords(Math.round(final)) + ' Rupees Only';
+}
+
+function numberToWords(num){
+const a=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+const b=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+if(num==0) return 'Zero';
+if(num<20) return a[num];
+if(num<100) return b[Math.floor(num/10)]+' '+a[num%10];
+if(num<1000) return a[Math.floor(num/100)]+' Hundred '+numberToWords(num%100);
+if(num<100000) return numberToWords(Math.floor(num/1000))+' Thousand '+numberToWords(num%1000);
+if(num<10000000) return numberToWords(Math.floor(num/100000))+' Lakh '+numberToWords(num%100000);
+return num;
+}
+</script>
+
+</body>
+</html>
